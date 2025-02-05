@@ -7,6 +7,6 @@ Resources:
     Properties:
       Runtime: python3.9  # Se usa la misma versión que en `Globals`
       Handler: app.lambda_handler
-      CodeUri: /lambdas/HelloWorld
+      CodeUri: lambdas/HelloWorld/
       Policies:
         - AWSLambdaBasicExecutionRole
