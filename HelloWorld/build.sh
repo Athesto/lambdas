@@ -9,5 +9,8 @@ PYTHON_VERSION=$(grep "Runtime:" template.yaml | head -n 1 | awk '{print $2}')
 # mkdir -p layers/libs-layer/python/lib/$PYTHON_VERSION/site-packages
 # pip install -r layers/libs-layer/requirements.txt -t layers/libs-layer/python/lib/$PYTHON_VERSION/site-packages
 
+echo "🔍 Validando AWS SAM..."
+sam validate --lint
+
 echo "🔨 Construyendo AWS SAM..."
 sam build
