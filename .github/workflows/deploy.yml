@@ -23,10 +23,6 @@ jobs:
         use-installer: true
         token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Show env
-      run: |
-        echo "AWS_ACCOUNT_ID: "${{ vars.AWS_ACCOUNT_ID2 }}
-
     - name: Configure AWS credentials using OIDC
       uses: aws-actions/configure-aws-credentials@v3
       with:
@@ -36,9 +32,9 @@ jobs:
     - name: Run build
       run: bash build.sh
 
-    - name: Deploy AWS SAM
-      run: |
-        sam deploy --no-confirm-changeset --no-fail-on-empty-changeset \
-          --stack-name my-sam-stack \
-          --capabilities CAPABILITY_IAM \
-          --resolve-s3
+    # - name: Deploy AWS SAM
+    #   run: |
+    #     sam deploy --no-confirm-changeset --no-fail-on-empty-changeset \
+    #       --stack-name my-sam-stack \
+    #       --capabilities CAPABILITY_IAM \
+    #       --resolve-s3
