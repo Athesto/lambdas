@@ -1,2 +1,2 @@
-(cd HelloWorld && ./build.sh)
-(cd .git && pwd)
+cd HelloWorld && ./build.sh
+cd .git && pwd
