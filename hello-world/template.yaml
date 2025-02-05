@@ -21,7 +21,7 @@ Resources:
     Properties:
       Runtime: python3.9  # Se usa la misma versión que en `Globals`
       Handler: app.lambda_handler
-      CodeUri: hello-world/
+      CodeUri: .
       Layers:
         - !Ref PythonDependenciesLayer
       Policies:
