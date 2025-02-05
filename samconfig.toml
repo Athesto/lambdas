@@ -1,8 +1,8 @@
 version = 0.1
 [default.deploy.parameters]
-stack_name = "HelloWorld"
+stack_name = "MultiLambdas"
 resolve_s3 = true
-s3_prefix = "HelloWorld"
+s3_prefix = "MultiLambdas"
 region = "us-east-1"
 confirm_changeset = false
 capabilities = "CAPABILITY_IAM"

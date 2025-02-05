@@ -1,0 +1,12 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  Lambdas.HelloWorld:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: python3.9  # Se usa la misma versión que en `Globals`
+      Handler: app.lambda_handler
+      CodeUri: /lambdas/HelloWorld
+      Policies:
+        - AWSLambdaBasicExecutionRole
