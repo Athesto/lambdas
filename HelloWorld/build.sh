@@ -18,3 +18,5 @@ alias python=python3
 
 echo "🔨 Construyendo AWS SAM..."
 sam build --use-container
+
+sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
