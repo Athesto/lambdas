@@ -23,9 +23,9 @@ jobs:
         use-installer: true
         token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: show env
+    - name: Show env
       run: |
-        echo "AWS_ACCOUNT_ID: {{ env.AWS_ACCOUNT_ID }}"
+        echo "AWS_ACCOUNT_ID: "{{ env.AWS_ACCOUNT_ID }}
 
     - name: Configure AWS credentials using OIDC
       uses: aws-actions/configure-aws-credentials@v3
