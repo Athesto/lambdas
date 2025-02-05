@@ -1,0 +1,39 @@
+name: Deploy AWS SAM
+
+on:
+  push:
+    branches:
+      - main  # O la rama que usas para desplegar
+
+permissions:
+  id-token: write  # Habilita OIDC para autenticación con AWS
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up AWS SAM
+      uses: aws-actions/setup-sam@v2  # Instala SAM automáticamente
+      with:
+        version: latest
+
+    - name: Configure AWS credentials using OIDC
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: arn:aws:iam::{{ secrets.AWS_ACCOUNT_ID }}:role/GitHubActionsSAMRole  # Reemplaza con tu ARN de IAM
+        aws-region: us-east-1  # Reemplaza con tu región
+
+    - name: Run build
+      run: bash build.sh
+
+    - name: Deploy AWS SAM
+      run: |
+        sam deploy --no-confirm-changeset --no-fail-on-empty-changeset \
+          --stack-name my-sam-stack \
+          --capabilities CAPABILITY_IAM \
+          --resolve-s3

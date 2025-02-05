@@ -1,0 +1,28 @@
+Globals:
+  Function:
+    Runtime: python3.9  # Define la versión de Python aquí
+
+Resources:
+  PythonDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: PythonDependenciesLayer
+      Description: Layer will contain dependencies
+      ContentUri: layers/libs-layer/
+      CompatibleRuntimes:
+        - python3.8
+        - python3.9
+        - python3.10
+      LicenseInfo: "MIT"
+      RetentionPolicy: Retain
+
+  MyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: python3.9  # Se usa la misma versión que en `Globals`
+      Handler: app.lambda_handler
+      CodeUri: hello-world/
+      Layers:
+        - !Ref PythonDependenciesLayer
+      Policies:
+        - AWSLambdaBasicExecutionRole
