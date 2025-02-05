@@ -33,7 +33,7 @@ jobs:
       run: sam validate --lint
 
     - name: 📦 Build
-      run: sam build
+      run: sam build --use-container
 
     - name: 🚀 Deploy
-      run: sam deploy --config-file samconfig.toml
+      run: sam deploy --config-file samconfig.toml --no-confirm-changeset --no-fail-on-empty-changeset
