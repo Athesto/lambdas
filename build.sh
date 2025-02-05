@@ -1,1 +1,2 @@
-bash HelloWorld/build.sh
+(cd HelloWorld && ./build.sh)
+(cd .git && pwd)
