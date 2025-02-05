@@ -1,3 +1,6 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+
 Resources:
   # PythonDependenciesLayer:
   #   Type: AWS::Serverless::LayerVersion
@@ -12,13 +15,13 @@ Resources:
   #     LicenseInfo: "MIT"
   #     RetentionPolicy: Retain
 
-  MyFunction:
+  LambdaHelloWorld:
     Type: AWS::Serverless::Function
     Properties:
-      #Runtime: python3.9  # Se usa la misma versión que en `Globals`
+      Runtime: python3.9  # Se usa la misma versión que en `Globals`
       Handler: app.lambda_handler
       CodeUri: .
-      Layers:
-        - !Ref PythonDependenciesLayer
+      # Layers:
+      #   - !Ref PythonDependenciesLayer
       Policies:
         - AWSLambdaBasicExecutionRole
