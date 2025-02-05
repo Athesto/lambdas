@@ -12,6 +12,7 @@ PYTHON_VERSION=$(grep "Runtime:" template.yaml | head -n 1 | awk '{print $2}')
 echo "🔍 Validando AWS SAM..."
 sam validate --lint
 
+echo "🐍 aliasing python to python3..."
 which python
 alias python=python3
 
