@@ -1,2 +1,1 @@
-cd hello-world
-bash ./build.sh
+bash HelloWorld/build.sh
