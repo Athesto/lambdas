@@ -20,7 +20,8 @@ jobs:
     - name: Set up AWS SAM
       uses: aws-actions/setup-sam@v2  # Instala SAM automáticamente
       with:
-        version: latest
+        use-installer: true
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Configure AWS credentials using OIDC
       uses: aws-actions/configure-aws-credentials@v2
