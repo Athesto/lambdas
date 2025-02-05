@@ -17,4 +17,4 @@ which python
 alias python=python3
 
 echo "🔨 Construyendo AWS SAM..."
-sam build
+sam build --use-container
