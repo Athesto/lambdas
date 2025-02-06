@@ -2,6 +2,18 @@ AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
 
 Resources:
+  # 🔴 API Gateways
+  ExampleAPIGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: ExampleAPI
+      StageName: prod
+      Cors: 
+        AllowMethods: "'GET,POST,OPTIONS'"
+        AllowHeaders: "'Content-Type'"
+        AllowOrigin: "'*'"
+
+  # 🟠 Lambda Functions
   HelloWorld:
     Type: AWS::Serverless::Function
     Properties:
@@ -10,3 +22,19 @@ Resources:
       CodeUri: lambdas/HelloWorld/
       Policies:
         - AWSLambdaBasicExecutionRole
+  ExampleAPI:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: python3.9  # Se usa la misma versión que en `Globals`
+      Handler: app.lambda_handler
+      CodeUri: lambdas/HelloWorld/
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      Events:
+        ExampleAPI:
+          Type: Api
+          Properties:
+            Path: /example
+            Method: get
+            ApiId: { Ref: ExampleAPIGateway }
+
