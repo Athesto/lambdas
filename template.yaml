@@ -6,7 +6,7 @@ Resources:
   ExampleAPIGateway:
     Type: AWS::Serverless::Api
     Properties:
-      Name: ExampleAPI
+      Name: ExampleAPIGateway
       StageName: prod
       Cors: 
         AllowMethods: "'GET,POST,OPTIONS'"
@@ -31,10 +31,9 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
       Events:
-        ExampleAPI:
+        ExampleAPIEvent:
           Type: Api
           Properties:
             Path: /example
-            Method: get
-            ApiId: { Ref: ExampleAPIGateway }
-
+            Method: GET
+            RestApiId: !Ref ExampleAPIGateway
