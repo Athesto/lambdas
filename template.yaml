@@ -1,12 +1,38 @@
 AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
 
+Parameters:
+  RootDomain:
+    Type: String
+    Default: gustavomejia.tech
+    Description: "Root domain for the API Gateway"
+
 Resources:
+  # # 🟣 Certificado SSL para *.demo.com
+  # ApiGatewayCertificate:
+  #   Type: AWS::CertificateManager::Certificate
+  #   Properties:
+  #     DomainName: !Sub "*.${RootDomain}"
+  #     ValidationMethod: DNS
+
+  # # 🟣 Custom Domain para API Gateway
+  # ApiGatewayCustomDomain:
+  #   Type: AWS::ApiGateway::DomainName
+  #   Properties:
+  #     DomainName: !Sub "api.${RootDomain}"
+  #     RegionalCertificateArn: !Ref ApiGatewayCertificate
+  #     EndpointConfiguration:
+  #       Types:
+  #         - REGIONAL
+
   # 🔴 API Gateways
   ExampleAPIGateway:
     Type: AWS::Serverless::Api
     Properties:
       Name: ExampleAPIGateway
+      # Domain:
+      #   DomainName: !Sub "api.${RootDomain}"  # ✅ Ahora usa el valor correcto
+      #   CertificateArn: !Ref ApiGatewayCertificate
       StageName: prod
       Cors: 
         AllowMethods: "'GET,POST,OPTIONS'"
