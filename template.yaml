@@ -48,6 +48,14 @@ Resources:
       CodeUri: lambdas/HelloWorld/
       Policies:
         - AWSLambdaBasicExecutionRole
+  HelloWorldCamicase:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: python3.9  # Se usa la misma versión que en `Globals`
+      Handler: app.lambda_handler
+      CodeUri: lambdas/HelloWorldCamicase/
+      Policies:
+        - AWSLambdaBasicExecutionRole
   ExampleAPI:
     Type: AWS::Serverless::Function
     Properties:
