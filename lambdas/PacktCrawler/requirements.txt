@@ -1,0 +1,4 @@
+requests
+watchfiles
+lxml
+python-dotenv
