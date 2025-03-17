@@ -28,6 +28,13 @@ To maintain a structured and organized repository, follow the naming conventions
 - **Ticket codes:** Use the format `LAM01` to `LAM99`
 - **Short name:** Should be descriptive yet concise, with a maximum of 20 characters
 
+### Useful Urls
+- [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli.html)
+- [AWS::CertificateManager::Certificate](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html)
+- [AWS::Serverless::Api](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-serverless-api.html)
+- [AWS::Serverless::Function](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-serverless-function.html)
+- [AWS::ApiGateway::DomainName](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-domainname.html)
+
 #### Example Branch Names:
 - `feat/LAM01-add-user-auth`
 - `feat/LAM25-update-logs`

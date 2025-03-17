@@ -1,73 +1,101 @@
+---
 AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
 
+Globals:
+  Function:
+    Runtime: python3.11
+
 Parameters:
+  Arn:
+    Type: String
+    Default: "<custom-arn>"
+    Description: "Root domain for the API Gateway"
   RootDomain:
     Type: String
     Default: gustavomejia.tech
     Description: "Root domain for the API Gateway"
 
 Resources:
-  # # 🟣 Certificado SSL para *.demo.com
-  # ApiGatewayCertificate:
-  #   Type: AWS::CertificateManager::Certificate
-  #   Properties:
-  #     DomainName: !Sub "*.${RootDomain}"
-  #     ValidationMethod: DNS
+  # 🟣 Custom Domain para API Gateway
+  #ApiGatewayCustomDomain:
+  #  Type: AWS::ApiGateway::DomainName
+  #  Properties:
+  #    DomainName: !Sub "api.${RootDomain}"
+  #    RegionalCertificateArn: !Ref ApiGatewayCertificate
+  #    SecurityPolicy: TLS_1_2
+  #    EndpointConfiguration:
+  #      Types:
+  #        - REGIONAL
 
-  # # 🟣 Custom Domain para API Gateway
-  # ApiGatewayCustomDomain:
-  #   Type: AWS::ApiGateway::DomainName
-  #   Properties:
-  #     DomainName: !Sub "api.${RootDomain}"
-  #     RegionalCertificateArn: !Ref ApiGatewayCertificate
-  #     EndpointConfiguration:
-  #       Types:
-  #         - REGIONAL
+  # 🔴 Certificado SSL para *.demo.com
+  ApiGatewayCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Sub "*.${RootDomain}"
+      ValidationMethod: DNS
 
-  # 🔴 API Gateways
+  # 🟣 API Gateways
   ExampleAPIGateway:
     Type: AWS::Serverless::Api
     Properties:
       Name: ExampleAPIGateway
-      # Domain:
-      #   DomainName: !Sub "api.${RootDomain}"  # ✅ Ahora usa el valor correcto
-      #   CertificateArn: !Ref ApiGatewayCertificate
+      Domain:
+        DomainName: !Sub "api.${RootDomain}"  # ✅ Ahora usa el valor correcto
+        CertificateArn: !Ref ApiGatewayCertificate
+        EndpointConfiguration: REGIONAL
       StageName: prod
-      Cors: 
+      Cors:
         AllowMethods: "'GET,POST,OPTIONS'"
         AllowHeaders: "'Content-Type'"
         AllowOrigin: "'*'"
 
   # 🟠 Lambda Functions
-  HelloWorld:
+  ExampleFunction:  # Use your own name
     Type: AWS::Serverless::Function
     Properties:
-      Runtime: python3.9  # Se usa la misma versión que en `Globals`
       Handler: app.lambda_handler
-      CodeUri: lambdas/HelloWorld/
+      CodeUri: lambdas/ExampleFunction/  # Use your own path
       Policies:
         - AWSLambdaBasicExecutionRole
-  HelloWorldCamicase:
+  ExampleAPI:  # Use your own name
     Type: AWS::Serverless::Function
     Properties:
-      Runtime: python3.9  # Se usa la misma versión que en `Globals`
       Handler: app.lambda_handler
-      CodeUri: lambdas/HelloWorldCamicase/
-      Policies:
-        - AWSLambdaBasicExecutionRole
-  ExampleAPI:
-    Type: AWS::Serverless::Function
-    Properties:
-      Runtime: python3.9  # Se usa la misma versión que en `Globals`
-      Handler: app.lambda_handler
-      CodeUri: lambdas/HelloWorld/
+      CodeUri: lambdas/ExampleFunction/  # Use your own path
       Policies:
         - AWSLambdaBasicExecutionRole
       Events:
         ExampleAPIEvent:
-          Type: Api
+          Type: HttpApi
           Properties:
-            Path: /example
+            Path: /example  # Use your own path
             Method: GET
-            RestApiId: !Ref ExampleAPIGateway
+  HelloWorldCamicase:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.lambda_handler
+      CodeUri: lambdas/HelloWorldCamicase/
+      Policies:
+        - AWSLambdaBasicExecutionRole
+
+Outputs:
+  Testing1:
+    Description: The URL of the Example API Gateway
+    Value: !Ref ExampleAPIGateway
+  Testing2:
+    Description: Stack Name
+    Value: AWS::StackName
+  Testing3:
+    Value: !Ref Arn
+  Testing4:
+    Description: Function ARN
+    Value: !GetAtt ExampleFunction.Arn
+  Testing5: 
+    Description: ApiGateway root resource Id
+    Value: !GetAtt ExampleAPIGateway.RootResourceId
+
+  #Testing2:
+  #  Description: The URL of the Example API Gateway
+  #  Value: !GetAtt ExampleFunction.FunctionName
+...
