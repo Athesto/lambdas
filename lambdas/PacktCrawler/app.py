@@ -12,7 +12,7 @@ from lxml import html
 from dotenv import load_dotenv
 
 # Local imports
-from libs import TelegramClient
+from libs.Telegram import TelegramClient
 
 @dataclass
 class Book():
@@ -113,7 +113,7 @@ def read_file(path):
 
 def transform_message(book:Book):
     today = datetime.now().strftime("%Y-%m-%d")
-    return f"""
+    message_raw =  f"""
     <b><a href='https://www.packtpub.com/free-learning/'>{book.title}:</a></b>
     {book.description}
 
@@ -125,9 +125,3 @@ def transform_message(book:Book):
     """
     message = re.sub(r"\n \s+", "\n", message_raw)
     return message
-
-
-
-
-if __name__ == __name__:
-    main()

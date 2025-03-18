@@ -10,13 +10,13 @@ class TelegramAPIParams():
 class TelegramClient:
     token: str
 
-    def sendMessage(self, **kwargs):
+    def sendMessage(self, chat_id, text, link_preview_options):
         return requests.post(
             f"https://api.telegram.org/bot{self.token}/sendMessage",
             data={
-                "chat_id": kwargs.get("chat_id"),
+                "chat_id": chat_id,
                 "parse_mode": "html",
-                "text": kwargs.get("text"),
-                "link_preview_options":kwargs.get("link_preview_options")
+                "text": text,
+                "link_preview_options": link_preview_options
             },
         )
