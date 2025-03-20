@@ -46,13 +46,6 @@ Resources:
         Route53:
           HostedZoneId: !Ref MyHostedDomain
 
-# 🟠 Layers Libs/Utils/Etc
-  LayerLibs:
-    Type: AWS::Serverless::LayerVersion
-    Properties:
-      ContentUri: libs/
-      LayerName: !Sub "${AWS::StackName}-Libs"
-
   # 🟠 Lambda Functions
   ExampleFunction:  # 📝
     Type: AWS::Serverless::Function
