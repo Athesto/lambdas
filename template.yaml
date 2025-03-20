@@ -33,7 +33,7 @@ Resources:
   ExampleSubdomainApiGateway:
     Type: AWS::Serverless::HttpApi
     Properties:
-      Name: ExampleApiGateway
+      Name: !Sub "${AWS::StackName}-ExampleSubdomain"  # ✅ Use Resource name
       StageName: Prod
       Domain:
         DomainName: !Sub "example.${RootDomain}"  # ✅ Ahora usa el valor correcto
@@ -47,8 +47,8 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: lambdas/ExampleFunction/  # ✅ Use your own directory
-      Description: "Use this function as an example to create your own endpoint" # ✅ Use your own description
-      FunctionName: ExampleApi  # ✅ Use your own name
+      Description: "This is an example. Use it as a reference to create your own endpoint." # ✅ Use your own description
+      FunctionName: !Sub "${AWS::StackName}-ExampleApi"  # ✅ Use Resource name
       Handler: app.lambda_handler
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -63,16 +63,20 @@ Resources:
   ExampleFunction:  # Use your own name
     Type: AWS::Serverless::Function
     Properties:
-      Handler: app.lambda_handler
       CodeUri: lambdas/ExampleFunction/  # Use your own path
+      Description: "This is an example. Use it as a reference to create your own function." # ✅ Use your own description
+      FunctionName: !Sub "${AWS::StackName}-ExampleFunction"  # ✅ Use Resource name
+      Handler: app.lambda_handler
       Policies:
         - AWSLambdaBasicExecutionRole
 
   HelloWorldCamicase:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: app.lambda_handler
       CodeUri: lambdas/HelloWorldCamicase/
+      Description: "Hello world of Camicase" # ✅ Use your own description
+      FunctionName: !Sub "${AWS::StackName}-HelloWorldCamicase"  # ✅ Use Resource name
+      Handler: app.lambda_handler
       Policies:
         - AWSLambdaBasicExecutionRole
 
