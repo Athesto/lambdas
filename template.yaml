@@ -7,95 +7,102 @@ Globals:
     Runtime: python3.11
 
 Parameters:
-  Arn:
-    Type: String
-    Default: "<custom-arn>"
-    Description: "Root domain for the API Gateway"
   RootDomain:
     Type: String
     Default: gustavomejia.tech
     Description: "Root domain for the API Gateway"
 
 Resources:
-  # 🟣 Custom Domain para API Gateway
-  #ApiGatewayCustomDomain:
-  #  Type: AWS::ApiGateway::DomainName
-  #  Properties:
-  #    DomainName: !Sub "api.${RootDomain}"
-  #    RegionalCertificateArn: !Ref ApiGatewayCertificate
-  #    SecurityPolicy: TLS_1_2
-  #    EndpointConfiguration:
-  #      Types:
-  #        - REGIONAL
+  # 🟣 External Domain
+  MyHostedDomain:
+    Type: AWS::Route53::HostedZone
+    Properties:
+      Name: !Sub "${RootDomain}"
 
-  # 🔴 Certificado SSL para *.demo.com
-  ApiGatewayCertificate:
+  # 🔴 SSL Certificate
+  ACMCertificate:
     Type: AWS::CertificateManager::Certificate
     Properties:
       DomainName: !Sub "*.${RootDomain}"
       ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: !Sub "*.${RootDomain}"
+          HostedZoneId: !Ref MyHostedDomain
 
-  # 🟣 API Gateways
-  ExampleAPIGateway:
-    Type: AWS::Serverless::Api
+  # 🟣 Subdomain Api Gateway http api
+  ExampleSubdomainApiGateway:
+    Type: AWS::Serverless::HttpApi
     Properties:
-      Name: ExampleAPIGateway
+      Name: !Sub "${AWS::StackName}-ExampleSubdomain"  # ✅ Use Resource name
+      StageName: Prod
       Domain:
-        DomainName: !Sub "api.${RootDomain}"  # ✅ Ahora usa el valor correcto
-        CertificateArn: !Ref ApiGatewayCertificate
+        DomainName: !Sub "example.${RootDomain}"  # ✅ Ahora usa el valor correcto
+        CertificateArn: !Ref ACMCertificate
         EndpointConfiguration: REGIONAL
-      StageName: prod
-      Cors:
-        AllowMethods: "'GET,POST,OPTIONS'"
-        AllowHeaders: "'Content-Type'"
-        AllowOrigin: "'*'"
+        Route53:
+          HostedZoneId: !Ref MyHostedDomain
 
   # 🟠 Lambda Functions
   ExampleFunction:  # Use your own name
     Type: AWS::Serverless::Function
     Properties:
-      Handler: app.lambda_handler
       CodeUri: lambdas/ExampleFunction/  # Use your own path
+      Description: "This is an example. Use it as a reference to create your own function." # ✅ Use your own description
+      FunctionName: !Sub "${AWS::StackName}-ExampleFunction"  # ✅ Use Resource name
+      Handler: app.lambda_handler
       Policies:
         - AWSLambdaBasicExecutionRole
-  ExampleAPI:  # Use your own name
+
+  ExampleCronjob:  # Use your own name
     Type: AWS::Serverless::Function
     Properties:
-      Handler: app.lambda_handler
       CodeUri: lambdas/ExampleFunction/  # Use your own path
+      Description: "This is an example. Use it as a reference to create your own cronjob." # ✅ Use your own description
+      FunctionName: !Sub "${AWS::StackName}-ExampleCronjob"  # ✅ Use Resource name
+      Handler: app.lambda_handler
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      Events:
+        ScheduledEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 0 1 1 ? *)  # Se ejecuta el 1 de enero a las 12:00 AM UTC
+            Enabled: false
+
+  ExampleApi:  # ✅ Use your own name
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdas/ExampleFunction/  # ✅ Use your own directory
+      Description: "This is an example. Use it as a reference to create your own endpoint." # ✅ Use your own description
+      FunctionName: !Sub "${AWS::StackName}-ExampleApi"  # ✅ Use Resource name
+      Handler: app.lambda_handler
       Policies:
         - AWSLambdaBasicExecutionRole
       Events:
         ExampleAPIEvent:
           Type: HttpApi
           Properties:
-            Path: /example  # Use your own path
+            ApiId: !Ref ExampleSubdomainApiGateway
             Method: GET
+            Path: /example  # Use your own path
+
   HelloWorldCamicase:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: app.lambda_handler
       CodeUri: lambdas/HelloWorldCamicase/
+      Description: "Hello world of Camicase" # ✅ Use your own description
+      FunctionName: !Sub "${AWS::StackName}-HelloWorldCamicase"  # ✅ Use Resource name
+      Handler: app.lambda_handler
       Policies:
         - AWSLambdaBasicExecutionRole
 
 Outputs:
-  Testing1:
-    Description: The URL of the Example API Gateway
-    Value: !Ref ExampleAPIGateway
-  Testing2:
-    Description: Stack Name
-    Value: AWS::StackName
-  Testing3:
-    Value: !Ref Arn
-  Testing4:
-    Description: Function ARN
-    Value: !GetAtt ExampleFunction.Arn
-  Testing5: 
-    Description: ApiGateway root resource Id
-    Value: !GetAtt ExampleAPIGateway.RootResourceId
-
-  #Testing2:
-  #  Description: The URL of the Example API Gateway
-  #  Value: !GetAtt ExampleFunction.FunctionName
+  HostedZoneNameServers:
+    Description: "Please copy the name servers below to your DNS provider"
+    Value: !Join [",", !GetAtt MyHostedDomain.NameServers]
+  HostedZoneArn:
+    Description: "Please use this Id to create records"
+    Value: !GetAtt MyHostedDomain.Id
+  StackInfo:
+    Value: !Sub "Stack name: ${AWS::StackName}, Id: ${AWS::StackId}"
 ...
