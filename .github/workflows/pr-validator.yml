@@ -1,7 +1,7 @@
-name: Deploy AWS SAM
+name: Validate Pull Request
 
 on:
-  push:
+  pull_request:
     branches:
       - main  # O la rama que usas para desplegar
 
@@ -31,9 +31,3 @@ jobs:
 
     - name: 📄 🔍 Validate Syntax
       run: sam validate --lint
-
-    - name: 📄 🔨 📦 Build
-      run: sam build --use-container
-
-    - name: 📦 🚀 ☁️ Deploy
-      run: sam deploy --config-file samconfig.toml --no-confirm-changeset --no-fail-on-empty-changeset
