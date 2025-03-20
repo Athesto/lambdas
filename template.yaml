@@ -2,9 +2,13 @@
 AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
 
+# Legends
+# 📝 Use your own values
+
 Globals:
   Function:
     Runtime: python3.11
+    Handler: app.lambda_handler
 
 Parameters:
   RootDomain:
@@ -17,7 +21,7 @@ Resources:
   MyHostedDomain:
     Type: AWS::Route53::HostedZone
     Properties:
-      Name: !Sub "${RootDomain}"
+      Name: !Ref RootDomain
 
   # 🔴 SSL Certificate
   ACMCertificate:
@@ -33,33 +37,50 @@ Resources:
   ExampleSubdomainApiGateway:
     Type: AWS::Serverless::HttpApi
     Properties:
-      Name: !Sub "${AWS::StackName}-ExampleSubdomain"  # ✅ Use Resource name
+      Name: !Sub "${AWS::StackName}-ExampleSubdomain"  # 📝
       StageName: Prod
       Domain:
-        DomainName: !Sub "example.${RootDomain}"  # ✅ Ahora usa el valor correcto
+        DomainName: !Sub "example.${RootDomain}"  # 📝
         CertificateArn: !Ref ACMCertificate
         EndpointConfiguration: REGIONAL
         Route53:
           HostedZoneId: !Ref MyHostedDomain
 
+# 🟠 Layers Libs/Utils/Etc
+  LayerLibs:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: libs/
+      LayerName: !Sub "${AWS::StackName}-Libs"
+
   # 🟠 Lambda Functions
-  ExampleFunction:  # Use your own name
+  ExampleFunction:  # 📝
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: lambdas/ExampleFunction/  # Use your own path
-      Description: "This is an example. Use it as a reference to create your own function." # ✅ Use your own description
-      FunctionName: !Sub "${AWS::StackName}-ExampleFunction"  # ✅ Use Resource name
-      Handler: app.lambda_handler
+      CodeUri: lambdas/ExampleFunction/  # 📝
+      Description: "This is an example. Use it as a reference to create your own function." # 📝
+      FunctionName: !Sub "${AWS::StackName}-ExampleFunction"  # 📝
       Policies:
         - AWSLambdaBasicExecutionRole
 
-  ExampleCronjob:  # Use your own name
+  ExampleLayer:  # 📝
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: lambdas/ExampleFunction/  # Use your own path
-      Description: "This is an example. Use it as a reference to create your own cronjob." # ✅ Use your own description
-      FunctionName: !Sub "${AWS::StackName}-ExampleCronjob"  # ✅ Use Resource name
-      Handler: app.lambda_handler
+      CodeUri: lambdas/ExampleLayer/  # 📝
+      Description: "This is an example. Use it as a reference to create your own function with layers." # 📝
+      FunctionName: !Sub "${AWS::StackName}-ExampleLayer"  # 📝
+      Layers:
+        - !Ref LayerLibs
+      Policies:
+        - AWSLambdaBasicExecutionRole
+
+
+  ExampleCronjob:  # 📝
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdas/ExampleFunction/  # 📝
+      Description: "This is an example. Use it as a reference to create your own cronjob." # 📝
+      FunctionName: !Sub "${AWS::StackName}-ExampleCronjob"  # 📝
       Policies:
         - AWSLambdaBasicExecutionRole
       Events:
@@ -69,13 +90,12 @@ Resources:
             Schedule: cron(0 0 1 1 ? *)  # Se ejecuta el 1 de enero a las 12:00 AM UTC
             Enabled: false
 
-  ExampleApi:  # ✅ Use your own name
+  ExampleApi:  # 📝
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: lambdas/ExampleFunction/  # ✅ Use your own directory
-      Description: "This is an example. Use it as a reference to create your own endpoint." # ✅ Use your own description
-      FunctionName: !Sub "${AWS::StackName}-ExampleApi"  # ✅ Use Resource name
-      Handler: app.lambda_handler
+      CodeUri: lambdas/ExampleFunction/  # 📝
+      Description: "This is an example. Use it as a reference to create your own endpoint." # 📝
+      FunctionName: !Sub "${AWS::StackName}-ExampleApi"  # 📝
       Policies:
         - AWSLambdaBasicExecutionRole
       Events:
@@ -84,15 +104,14 @@ Resources:
           Properties:
             ApiId: !Ref ExampleSubdomainApiGateway
             Method: GET
-            Path: /example  # Use your own path
+            Path: /example  # 📝
 
   HelloWorldCamicase:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: lambdas/HelloWorldCamicase/
-      Description: "Hello world of Camicase" # ✅ Use your own description
-      FunctionName: !Sub "${AWS::StackName}-HelloWorldCamicase"  # ✅ Use Resource name
-      Handler: app.lambda_handler
+      Description: "Hello world of Camicase" # 📝
+      FunctionName: !Sub "${AWS::StackName}-HelloWorldCamicase"  # 📝
       Policies:
         - AWSLambdaBasicExecutionRole
 
