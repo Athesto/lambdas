@@ -43,6 +43,32 @@ Resources:
           HostedZoneId: !Ref MyHostedDomain
 
   # 🟠 Lambda Functions
+  ExampleFunction:  # Use your own name
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdas/ExampleFunction/  # Use your own path
+      Description: "This is an example. Use it as a reference to create your own function." # ✅ Use your own description
+      FunctionName: !Sub "${AWS::StackName}-ExampleFunction"  # ✅ Use Resource name
+      Handler: app.lambda_handler
+      Policies:
+        - AWSLambdaBasicExecutionRole
+
+  ExampleCronjob:  # Use your own name
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdas/ExampleFunction/  # Use your own path
+      Description: "This is an example. Use it as a reference to create your own cronjob." # ✅ Use your own description
+      FunctionName: !Sub "${AWS::StackName}-ExampleCronjob"  # ✅ Use Resource name
+      Handler: app.lambda_handler
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      Events:
+        ScheduledEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 0 1 1 ? *)  # Se ejecuta el 1 de enero a las 12:00 AM UTC
+            Enabled: false
+
   ExampleApi:  # ✅ Use your own name
     Type: AWS::Serverless::Function
     Properties:
@@ -59,16 +85,6 @@ Resources:
             ApiId: !Ref ExampleSubdomainApiGateway
             Method: GET
             Path: /example  # Use your own path
-
-  ExampleFunction:  # Use your own name
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: lambdas/ExampleFunction/  # Use your own path
-      Description: "This is an example. Use it as a reference to create your own function." # ✅ Use your own description
-      FunctionName: !Sub "${AWS::StackName}-ExampleFunction"  # ✅ Use Resource name
-      Handler: app.lambda_handler
-      Policies:
-        - AWSLambdaBasicExecutionRole
 
   HelloWorldCamicase:
     Type: AWS::Serverless::Function
@@ -88,5 +104,5 @@ Outputs:
     Description: "Please use this Id to create records"
     Value: !GetAtt MyHostedDomain.Id
   StackInfo:
-    Value: !Sub "Stack name: ${AWS::StackName}, Id: ${AWS::StackId}" 
+    Value: !Sub "Stack name: ${AWS::StackName}, Id: ${AWS::StackId}"
 ...
