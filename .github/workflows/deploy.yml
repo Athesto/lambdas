@@ -29,11 +29,11 @@ jobs:
         role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubActionsSAMRole  # Reemplaza con tu ARN de IAM
         aws-region: us-east-1  # Reemplaza con tu región
 
-    - name: 🔍 Validate Syntax
+    - name: 📄 🔍 Validate Syntax
       run: sam validate --lint
 
-    - name: 📦 Build
+    - name: 📄 🔨 📦 Build
       run: sam build --use-container
 
-    - name: 🚀 Deploy
+    - name: 📦 🚀 ☁️ Deploy
       run: sam deploy --config-file samconfig.toml --no-confirm-changeset --no-fail-on-empty-changeset
