@@ -64,7 +64,7 @@ jobs:
     - name: use curl
       uses: dedene/curl@v1
       with:
-        args: -d "hello=1" -d "foobar=123" https://webhook.site/943e6fa6-c61a-434c-84ab-b5988dbafd00
+        args: -d "hello=1" -d "foobar=123" "https://webhook.site/943e6fa6-c61a-434c-84ab-b5988dbafd00"
 
     #- name: 📦 🚀 ☁️ Deploy
     #  run: |
