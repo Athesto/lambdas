@@ -1,0 +1,44 @@
+name: Testing Github Actions
+
+on:
+  push:
+    branches:
+      - feat/packt-crawler  # O la rama que usas para desplegar
+
+permissions:
+  id-token: write  # Habilita OIDC para autenticación con AWS
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Install yq
+      uses: mikefarah/yq@master
+
+    - name: Set up AWS SAM
+      uses: aws-actions/setup-sam@v2  # Instala SAM automáticamente
+      with:
+        use-installer: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Configure AWS credentials using OIDC
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubActionsSAMRole  # Reemplaza con tu ARN de IAM
+        aws-region: us-east-1  # Reemplaza con tu región
+
+    - name: 📄 🔍 Validate Syntax
+      run: sam validate --lint
+
+    - name: 📄 🔨 📦 Build
+      run: sam build --use-container
+
+    - name: 📦 🚀 ☁️ Deploy
+      run: |
+        export SAM_PARAMETER_OVERIDES="$(yq eval '.Parameters | with_entries(select(.key | test("^SECRET"))) | keys | .[] | "\(. )=\"{{secrets.\(. )}}\"" ' template.yaml | paste -sd ' ' -)"
+        sam deploy --config-file samconfig.toml --no-confirm-changeset --no-fail-on-empty-changeset --parameter-overrides $SAM_PARAMETER_OVERIDES
