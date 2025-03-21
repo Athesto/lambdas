@@ -12,7 +12,7 @@ from lxml import html
 from dotenv import load_dotenv
 
 # Local imports
-from libs.Telegram import TelegramClient
+from Telegram import TelegramClient
 
 @dataclass
 class Book():

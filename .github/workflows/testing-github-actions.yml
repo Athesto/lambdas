@@ -40,5 +40,5 @@ jobs:
 
     - name: 📦 🚀 ☁️ Deploy
       run: |
-        export SAM_PARAMETER_OVERIDES="$(yq eval '.Parameters | with_entries(select(.key | test("^SECRET"))) | keys | .[] | "\(. )=\"{{secrets.\(. )}}\"" ' template.yaml | paste -sd ' ' -)"
+        export SAM_PARAMETER_OVERIDES="$(yq eval '.Parameters | with_entries(select(.key | test("^SECRET"))) | keys | .[] | "\(. )=\"${{ secrets.\(. ) }}\"" ' template.yaml | paste -sd ' ' -)"
         sam deploy --config-file samconfig.toml --no-confirm-changeset --no-fail-on-empty-changeset --parameter-overrides $SAM_PARAMETER_OVERIDES
