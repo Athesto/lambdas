@@ -20,6 +20,14 @@ Before you start, make sure you have the following:
     - Duplicate Resources `TemplatesSimpleLambda` inside the `Resources` ex `HelloWorld`
     - Modify `CodeUri` to your needs
 
+### Execute a Lambda Function with SAM
+it needs `docker` installed on your machine
+```
+sam validate --lint
+sam build
+sam local invoke ExampleFunction
+```
+
 ### Branch Structure
 To maintain a structured and organized repository, follow the naming conventions for branches:
 
