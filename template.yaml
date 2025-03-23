@@ -16,6 +16,14 @@ Parameters:
     Default: gustavomejia.tech
     Description: "Root domain for the API Gateway"
 
+  SECRETTELEGRAMBOTTOKEN:
+    Type: String
+    Description: "Telegram bot token"
+
+  SECRETCHATID:
+    Type: String
+    Description: "Telegram chat id"
+
 Resources:
   # 🟣 External Domain
   MyHostedDomain:
@@ -46,40 +54,45 @@ Resources:
         Route53:
           HostedZoneId: !Ref MyHostedDomain
 
-# 🟠 Layers Libs/Utils/Etc
+  # 🟠 Layers Libs/Utils/Etc
   LayerLibs:
     Type: AWS::Serverless::LayerVersion
     Properties:
       ContentUri: libs/
       LayerName: !Sub "${AWS::StackName}-Libs"
+    Metadata:
+      BuildMethod: python3.11
 
   # 🟠 Lambda Functions
   ExampleFunction:  # 📝
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: lambdas/ExampleFunction/  # 📝
-      Description: "This is an example. Use it as a reference to create your own function." # 📝
+      Description: | # 📝
+        "This is an example.
+        Use it as a reference to create your own function."
       FunctionName: !Sub "${AWS::StackName}-ExampleFunction"  # 📝
-      Policies:
-        - AWSLambdaBasicExecutionRole
 
   ExampleLayer:  # 📝
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: lambdas/ExampleLayer/  # 📝
-      Description: "This is an example. Use it as a reference to create your own function with layers." # 📝
+      Description: | # 📝
+        "This is an example.
+        Use it as a reference to create your own function with layers."
       FunctionName: !Sub "${AWS::StackName}-ExampleLayer"  # 📝
       Layers:
         - !Ref LayerLibs
       Policies:
         - AWSLambdaBasicExecutionRole
 
-
   ExampleCronjob:  # 📝
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: lambdas/ExampleFunction/  # 📝
-      Description: "This is an example. Use it as a reference to create your own cronjob." # 📝
+      Description: | # 📝
+        "This is an example.
+        Use it as a reference to create your own cronjob."
       FunctionName: !Sub "${AWS::StackName}-ExampleCronjob"  # 📝
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -87,14 +100,16 @@ Resources:
         ScheduledEvent:
           Type: Schedule
           Properties:
-            Schedule: cron(0 0 1 1 ? *)  # Se ejecuta el 1 de enero a las 12:00 AM UTC
+            Schedule: cron(0 0 1 1 ? *)  # Ene 1 a las 12:00 AM UTC
             Enabled: false
 
   ExampleApi:  # 📝
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: lambdas/ExampleFunction/  # 📝
-      Description: "This is an example. Use it as a reference to create your own endpoint." # 📝
+      Description: | # 📝
+        "This is an example.
+        Use it as a reference to create your own endpoint."
       FunctionName: !Sub "${AWS::StackName}-ExampleApi"  # 📝
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -114,6 +129,31 @@ Resources:
       FunctionName: !Sub "${AWS::StackName}-HelloWorldCamicase"  # 📝
       Policies:
         - AWSLambdaBasicExecutionRole
+
+  PacktCrawler:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdas/PacktCrawler/
+      Description: |
+        "This script fetch the information of free books from Packt"
+      FunctionName: !Sub "${AWS::StackName}-PacktCrawler"
+      Handler: app.lambda_handler
+      Environment:
+        Variables:
+          TELEGRAM_BOT_TOKEN: !Ref SECRETTELEGRAMBOTTOKEN
+          CHAT_ID: !Ref SECRETCHATID
+      Events:
+        ScheduledEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 11 * * ? *) # 11:00 AM UTC o 6:00 AM GMT-5
+            Enabled: true
+      Layers:
+        - !Ref LayerLibs
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      MemorySize: 2560 # 2.5 GB
+      Timeout: 300 # 300 seconds (5 minutes)
 
 Outputs:
   HostedZoneNameServers:
