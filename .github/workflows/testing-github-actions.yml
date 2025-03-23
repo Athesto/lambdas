@@ -1,9 +1,11 @@
 name: Testing Github Actions
 
 on:
-  push:
-    branches:
-      - feat/packt-crawler  # O la rama que usas para desplegar
+  workflow_dispatch:
+
+  #push:
+  #  branches:
+  #    - ["test/*"]
 
 permissions:
   id-token: write  # Habilita OIDC para autenticación con AWS
@@ -17,34 +19,38 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: print Hello world
+      run: |
+        echo "Hello world"
+
     #- name: Install yq
     #  uses: mikefarah/yq@master
     #  with:
     #    cmd: install
 
-    - name: Set up AWS SAM
-      uses: aws-actions/setup-sam@v2  # Instala SAM automáticamente
-      with:
-        use-installer: true
-        token: ${{ secrets.GITHUB_TOKEN }}
+    #- name: Set up AWS SAM
+    #  uses: aws-actions/setup-sam@v2  # Instala SAM automáticamente
+    #  with:
+    #    use-installer: true
+    #    token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Configure AWS credentials using OIDC
-      uses: aws-actions/configure-aws-credentials@v3
-      with:
-        role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubActionsSAMRole  # Reemplaza con tu ARN de IAM
-        aws-region: us-east-1  # Reemplaza con tu región
+    #- name: Configure AWS credentials using OIDC
+    #  uses: aws-actions/configure-aws-credentials@v3
+    #  with:
+    #    role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubActionsSAMRole  # Reemplaza con tu ARN de IAM
+    #    aws-region: us-east-1  # Reemplaza con tu región
 
-    - name: 📄 🔍 Validate Syntax
-      run: sam validate --lint
+    #- name: 📄 🔍 Validate Syntax
+    #  run: sam validate --lint
 
-    - name: 📄 🔨 📦 Build
-      run: sam build --use-container
+    #- name: 📄 🔨 📦 Build
+    #  run: sam build --use-container
 
-    - name: 📦 🚀 ☁️ Deploy
-      run: |
-        sam deploy --config-file samconfig.toml --no-confirm-changeset --no-fail-on-empty-changeset --parameter-overrides \
-          SECRETTELEGRAMBOTTOKEN=${{ secrets.SECRETTELEGRAMBOTTOKEN }} \
-          SECRETCHATID=${{ secrets.SECRETCHATID }}
+    #- name: 📦 🚀 ☁️ Deploy
+    #  run: |
+    #    sam deploy --config-file samconfig.toml --no-confirm-changeset --no-fail-on-empty-changeset --parameter-overrides \
+    #      SECRETTELEGRAMBOTTOKEN=${{ secrets.SECRETTELEGRAMBOTTOKEN }} \
+    #      SECRETCHATID=${{ secrets.SECRETCHATID }}
 
     #- name: Find Secrets 🦘
     #  uses: mikefarah/yq@master

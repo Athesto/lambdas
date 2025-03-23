@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
+  validation-pre-merge:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,12 +22,6 @@ jobs:
       with:
         use-installer: true
         token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Configure AWS credentials using OIDC
-      uses: aws-actions/configure-aws-credentials@v3
-      with:
-        role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubActionsSAMRole  # Reemplaza con tu ARN de IAM
-        aws-region: us-east-1  # Reemplaza con tu región
 
     - name: 📄 🔍 Validate Syntax
       run: sam validate --lint

@@ -20,12 +20,19 @@ Before you start, make sure you have the following:
     - Duplicate Resources `TemplatesSimpleLambda` inside the `Resources` ex `HelloWorld`
     - Modify `CodeUri` to your needs
 
-### Execute a Lambda Function with SAM
+### Execute a Lambda Function with SAM locally
 it needs `docker` installed on your machine
 ```
 sam validate --lint
 sam build
 sam local invoke ExampleFunction
+```
+
+### Execute a workflow locally
+it needs `docker` installed on your machine
+```
+brew install act
+act -j testing --container-architecture linux/amd64
 ```
 
 ### Branch Structure
