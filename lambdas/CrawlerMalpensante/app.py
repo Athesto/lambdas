@@ -52,5 +52,5 @@ def lambda_handler(event, context):
         "headers": {
             "Content-Type": "application/rss+xml; charset=utf-8"
         },
-        "body": etree.tostring(rss, pretty_print=True, encoding='utf-8', xml_declaration=True)
+        "body": etree.tostring(rss, pretty_print=True, encoding='unicode', xml_declaration=True)
     }
