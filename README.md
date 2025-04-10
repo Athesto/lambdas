@@ -25,7 +25,7 @@ it needs `docker` installed on your machine
 ```
 sam validate --lint
 sam build
-sam local invoke <Your-Resource-Name> [--watch]
+sam local invoke <Your-Resource-Name>
 ```
 
 ### Execute a workflow locally
