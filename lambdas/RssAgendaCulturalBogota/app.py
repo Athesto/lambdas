@@ -32,12 +32,13 @@ def lambda_handler(event, context):
         etree.SubElement(xmlElement, 'link').text = base_url + article.xpath("./@href")[0]
         etree.SubElement(xmlElement, 'guid').text = base_url + article.xpath("./@href")[0]
         category = article.xpath(".//div[@class='categoria-tarjeta']/span/text()")
-        etree.SubElement(xmlElement, 'category').text = '' if len(category) == 0 else category[0]
+        category = category[0] if category else 'Sin Categoría'
+        etree.SubElement(xmlElement, 'category').text = category
         place = article.xpath(".//div[contains(@class, 'evento-detalle-lugar')]//span/text()")[0].strip()
         etree.SubElement(xmlElement, 'place').text = place
         isFree = article.xpath(".//div[contains(@class, 'evento-detalle-es-pago')]/span/text()")[0]
         etree.SubElement(xmlElement, 'isFree').text = isFree
-        date = article.xpath(".//span[contains(@class, 'fechas__destacadas')]/text()")[0]
+        date = article.xpath(".//span[contains(@class, 'fechas__destacadas')]")[0].text_content()
         etree.SubElement(xmlElement, 'date').text = date
         etree.SubElement(xmlElement, 'enclosure', attrib={
             'url': base_url + article.xpath(".//img/@src")[0],
@@ -45,10 +46,10 @@ def lambda_handler(event, context):
             'type': 'image/jpeg'
         })
         etree.SubElement(xmlElement, 'description').text = textwrap.dedent(f"""
-        <p><b>Categoria:</b>: {category}</p>
-        <p><b>Fechas:</b>: {date}</p>
-        <p><b>Lugar:</b>: {place}</p>
-        <p><b>Es Pago:</b>: {isFree}</p>
+        <p><b>Categoria:</b> {category}</p>
+        <p><b>Fechas:</b> {date}</p>
+        <p><b>Lugar:</b> {place}</p>
+        <p><b>Es Pago:</b> {isFree}</p>
         """)
 
 
