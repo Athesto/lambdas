@@ -140,11 +140,17 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
       Events:
+        HeadEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ExampleSubdomainApiGateway
+            Method: HEAD
+            Path: /rss/malpensante
         ExampleAPIEvent:
           Type: HttpApi
           Properties:
             ApiId: !Ref ExampleSubdomainApiGateway
-            Method: GET,HEAD
+            Method: GET
             Path: /rss/malpensante
       Timeout: 300 # 300 seconds (5 minutes)
 
