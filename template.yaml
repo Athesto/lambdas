@@ -130,6 +130,26 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
 
+  CrawlerMalpensante:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdas/CrawlerMalpensante/
+      Description: |
+        "This script fetch the information of articles from Malpensante as rss feed"
+      FunctionName: !Sub "${AWS::StackName}-CrawlerMalpensante"
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      Events:
+        ExampleAPIEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ExampleSubdomainApiGateway
+            Method: GET
+            Path: /rss/malpensante
+      MemorySize: 2560 # 2.5 GB
+      Timeout: 300 # 300 seconds (5 minutes)
+
+
   PacktCrawler:
     Type: AWS::Serverless::Function
     Properties:
