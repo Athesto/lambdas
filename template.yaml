@@ -144,7 +144,7 @@ Resources:
           Type: HttpApi
           Properties:
             ApiId: !Ref ExampleSubdomainApiGateway
-            Method: GET
+            Method: GET,HEAD
             Path: /rss/malpensante
       Timeout: 300 # 300 seconds (5 minutes)
 
