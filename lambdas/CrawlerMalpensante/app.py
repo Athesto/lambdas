@@ -1,19 +1,14 @@
 #!/usr/bin/env python3
 import requests
 from lxml import html, etree
-from pprint import pprint
-import http.server
-
-
-PORT = 3001
-
-
 
 
 def lambda_handler(event, context):
     url = 'https://elmalpensante.com/ultimaedicion'
     base_url = 'https://elmalpensante.com'
     response = requests.get(url)
+
+    response.raise_for_status()
 
     tree = html.fromstring(response.content)
 
