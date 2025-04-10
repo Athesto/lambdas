@@ -35,6 +35,11 @@ brew install act
 act -j testing --container-architecture linux/amd64
 ```
 
+### Display CloudFormation Outputs
+```
+export AWS_PROFILE=<your-profile> && aws cloudformation describe-stacks --stack-name Multilambdas
+```
+
 ### Branch Structure
 To maintain a structured and organized repository, follow the naming conventions for branches:
 
