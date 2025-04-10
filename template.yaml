@@ -121,6 +121,24 @@ Resources:
             Method: GET
             Path: /example  # 📝
 
+  RssAgendaCulturalBogota:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdas/RssAgendaCulturalBogota/
+      Description: |
+        "This script fetch the information of bogota agenda as rss feed"
+      FunctionName: !Sub "${AWS::StackName}-RssAgendaCulturalBogota"
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      Events:
+        ExampleAPIEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ExampleSubdomainApiGateway
+            Method: GET
+            Path: /rss/agenda-cultural-bogota
+      Timeout: 30 # 30 seconds
+
   HelloWorldCamicase:
     Type: AWS::Serverless::Function
     Properties:
