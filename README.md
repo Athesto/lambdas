@@ -40,6 +40,13 @@ act -j testing --container-architecture linux/amd64
 export AWS_PROFILE=<your-profile> && aws cloudformation describe-stacks --stack-name Multilambdas
 ```
 
+### Display Github Actions in terminal
+```sh
+gh run view --web # to go to the Github Actions UI
+gh run watch # to watch the status of the Github Actions
+```
+
+
 ### Branch Structure
 To maintain a structured and organized repository, follow the naming conventions for branches:
 
