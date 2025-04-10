@@ -6,7 +6,13 @@ from lxml import html, etree
 def lambda_handler(event, context):
     url = 'https://elmalpensante.com/ultimaedicion'
     base_url = 'https://elmalpensante.com'
-    response = requests.get(url)
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "Accept-Language": "es-ES,es;q=0.9",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Referer": "https://elmalpensante.com/"
+    }
+    response = requests.get(url, headers=headers)
 
     response.raise_for_status()
 
