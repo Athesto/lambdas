@@ -25,7 +25,7 @@ it needs `docker` installed on your machine
 ```
 sam validate --lint
 sam build
-sam local invoke <Your-Resource-Name>
+sam local invoke <Your-Resource-Name> [--watch]
 ```
 
 ### Execute a workflow locally
@@ -33,6 +33,11 @@ it needs `docker` installed on your machine
 ```
 brew install act
 act -j testing --container-architecture linux/amd64
+```
+
+### Display CloudFormation Outputs
+```
+export AWS_PROFILE=<your-profile> && aws cloudformation describe-stacks --stack-name Multilambdas
 ```
 
 ### Branch Structure
