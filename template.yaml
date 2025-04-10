@@ -146,7 +146,6 @@ Resources:
             ApiId: !Ref ExampleSubdomainApiGateway
             Method: GET
             Path: /rss/malpensante
-      MemorySize: 2560 # 2.5 GB
       Timeout: 300 # 300 seconds (5 minutes)
 
 
