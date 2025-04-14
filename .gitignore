@@ -6,3 +6,4 @@ venv/
 .env.prod
 secret*
 *.swp
+template.generated.yaml

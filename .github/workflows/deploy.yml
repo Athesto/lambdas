@@ -30,7 +30,9 @@ jobs:
         aws-region: us-east-1  # Reemplaza con tu región
 
     - name: 🔍 Validate template.yaml
-      run: make validate-template
+      run: |
+        make setup-template
+        make validate-template
 
     - name: 🔍 Validate Syntax
       run: sam validate --lint
