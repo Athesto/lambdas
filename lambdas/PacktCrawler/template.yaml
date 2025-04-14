@@ -1,0 +1,25 @@
+Resources:
+  PacktCrawler:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdas/PacktCrawler/src
+      Description: |
+        "This script fetch the information of free books from Packt"
+      FunctionName: !Sub "${AWS::StackName}-PacktCrawler"
+      Handler: app.lambda_handler
+      Environment:
+        Variables:
+          TELEGRAM_BOT_TOKEN: !Ref SECRETTELEGRAMBOTTOKEN
+          CHAT_ID: !Ref SECRETCHATID
+      Events:
+        ScheduledEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 11 * * ? *) # 11:00 AM UTC o 6:00 AM GMT-5
+            Enabled: true
+      Layers:
+        - !Ref LayerLibs
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      MemorySize: 2560 # 2.5 GB
+      Timeout: 300 # 300 seconds (5 minutes)

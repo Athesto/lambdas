@@ -1,210 +1,222 @@
----
 AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
-
-# Legends
-# 📝 Use your own values
-
 Globals:
   Function:
     Runtime: python3.11
     Handler: app.lambda_handler
-
 Parameters:
   RootDomain:
     Type: String
     Default: gustavomejia.tech
-    Description: "Root domain for the API Gateway"
-
+    Description: Root domain for the API Gateway
   SECRETTELEGRAMBOTTOKEN:
     Type: String
-    Description: "Telegram bot token"
-
+    Description: Telegram bot token
   SECRETCHATID:
     Type: String
-    Description: "Telegram chat id"
-
+    Description: Telegram chat id
 Resources:
-  # 🟣 External Domain
   MyHostedDomain:
     Type: AWS::Route53::HostedZone
     Properties:
-      Name: !Ref RootDomain
-
-  # 🔴 SSL Certificate
+      Name:
+        Ref: RootDomain
   ACMCertificate:
     Type: AWS::CertificateManager::Certificate
     Properties:
-      DomainName: !Sub "*.${RootDomain}"
+      DomainName:
+        Fn::Sub: '*.${RootDomain}'
       ValidationMethod: DNS
       DomainValidationOptions:
-        - DomainName: !Sub "*.${RootDomain}"
-          HostedZoneId: !Ref MyHostedDomain
-
-  # 🟣 Subdomain Api Gateway http api
+      - DomainName:
+          Fn::Sub: '*.${RootDomain}'
+        HostedZoneId:
+          Ref: MyHostedDomain
   ExampleSubdomainApiGateway:
     Type: AWS::Serverless::HttpApi
     Properties:
-      Name: !Sub "${AWS::StackName}-ExampleSubdomain"  # 📝
+      Name:
+        Fn::Sub: ${AWS::StackName}-ExampleSubdomain
       StageName: Prod
       Domain:
-        DomainName: !Sub "example.${RootDomain}"  # 📝
-        CertificateArn: !Ref ACMCertificate
+        DomainName:
+          Fn::Sub: example.${RootDomain}
+        CertificateArn:
+          Ref: ACMCertificate
         EndpointConfiguration: REGIONAL
         Route53:
-          HostedZoneId: !Ref MyHostedDomain
-
-  # 🟠 Layers Libs/Utils/Etc
+          HostedZoneId:
+            Ref: MyHostedDomain
   LayerLibs:
     Type: AWS::Serverless::LayerVersion
     Properties:
       ContentUri: libs/
-      LayerName: !Sub "${AWS::StackName}-Libs"
+      LayerName:
+        Fn::Sub: ${AWS::StackName}-Libs
     Metadata:
       BuildMethod: python3.11
-
-  # 🟠 Lambda Functions
-  ExampleFunction:  # 📝
+  HelloWorldCamicase:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: lambdas/ExampleFunction/  # 📝
-      Description: | # 📝
-        "This is an example.
-        Use it as a reference to create your own function."
-      FunctionName: !Sub "${AWS::StackName}-ExampleFunction"  # 📝
-
-  ExampleLayer:  # 📝
+      CodeUri: lambdas/HelloWorldCamicase/src
+      Description: Hello world of Camicase
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-HelloWorldCamicase
+      Policies:
+      - AWSLambdaBasicExecutionRole
+  ExampleLayer:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: lambdas/ExampleLayer/  # 📝
-      Description: | # 📝
-        "This is an example.
+      CodeUri: lambdas/ExampleLayer/src
+      Description: '"This is an example.
+
         Use it as a reference to create your own function with layers."
-      FunctionName: !Sub "${AWS::StackName}-ExampleLayer"  # 📝
-      Layers:
-        - !Ref LayerLibs
-      Policies:
-        - AWSLambdaBasicExecutionRole
 
-  ExampleCronjob:  # 📝
+        '
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-ExampleLayer
+      Layers:
+      - Ref: LayerLibs
+      Policies:
+      - AWSLambdaBasicExecutionRole
+  PacktCrawler:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: lambdas/ExampleFunction/  # 📝
-      Description: | # 📝
-        "This is an example.
-        Use it as a reference to create your own cronjob."
-      FunctionName: !Sub "${AWS::StackName}-ExampleCronjob"  # 📝
-      Policies:
-        - AWSLambdaBasicExecutionRole
+      CodeUri: lambdas/PacktCrawler/src
+      Description: '"This script fetch the information of free books from Packt"
+
+        '
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-PacktCrawler
+      Handler: app.lambda_handler
+      Environment:
+        Variables:
+          TELEGRAM_BOT_TOKEN:
+            Ref: SECRETTELEGRAMBOTTOKEN
+          CHAT_ID:
+            Ref: SECRETCHATID
       Events:
         ScheduledEvent:
           Type: Schedule
           Properties:
-            Schedule: cron(0 0 1 1 ? *)  # Ene 1 a las 12:00 AM UTC
-            Enabled: false
-
-  ExampleApi:  # 📝
+            Schedule: cron(0 11 * * ? *)
+            Enabled: true
+      Layers:
+      - Ref: LayerLibs
+      Policies:
+      - AWSLambdaBasicExecutionRole
+      MemorySize: 2560
+      Timeout: 300
+  ExampleApi:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: lambdas/ExampleFunction/  # 📝
-      Description: | # 📝
-        "This is an example.
-        Use it as a reference to create your own endpoint."
-      FunctionName: !Sub "${AWS::StackName}-ExampleApi"  # 📝
+      CodeUri: lambdas/ExampleFunction/src
+      Description: 'This is an example.
+
+        Use it as a reference to create your own endpoint.
+
+        '
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-ExampleApi
       Policies:
-        - AWSLambdaBasicExecutionRole
+      - AWSLambdaBasicExecutionRole
       Events:
         ExampleAPIEvent:
           Type: HttpApi
           Properties:
-            ApiId: !Ref ExampleSubdomainApiGateway
+            ApiId:
+              Ref: ExampleSubdomainApiGateway
             Method: GET
-            Path: /example  # 📝
-
+            Path: /example
   RssAgendaCulturalBogota:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: lambdas/RssAgendaCulturalBogota/
-      Description: |
-        "This script fetch the information of bogota agenda as rss feed"
-      FunctionName: !Sub "${AWS::StackName}-RssAgendaCulturalBogota"
+      CodeUri: lambdas/RssAgendaCulturalBogota/src
+      Description: '"This script fetch the information of bogota agenda as rss feed"
+
+        '
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-RssAgendaCulturalBogota
       Policies:
-        - AWSLambdaBasicExecutionRole
+      - AWSLambdaBasicExecutionRole
       Events:
         ExampleAPIEvent:
           Type: HttpApi
           Properties:
-            ApiId: !Ref ExampleSubdomainApiGateway
+            ApiId:
+              Ref: ExampleSubdomainApiGateway
             Method: GET
             Path: /rss/agenda-cultural-bogota
-      Timeout: 30 # 30 seconds
-
-  HelloWorldCamicase:
+      Timeout: 30
+  ExampleCronjob:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: lambdas/HelloWorldCamicase/
-      Description: "Hello world of Camicase" # 📝
-      FunctionName: !Sub "${AWS::StackName}-HelloWorldCamicase"  # 📝
-      Policies:
-        - AWSLambdaBasicExecutionRole
+      CodeUri: lambdas/ExampleFunction/src
+      Description: '"This is an example.
 
+        Use it as a reference to create your own cronjob."
+
+        '
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-ExampleCronjob
+      Policies:
+      - AWSLambdaBasicExecutionRole
+      Events:
+        ScheduledEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 0 1 1 ? *)
+            Enabled: false
+  ExampleFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdas/ExampleFunction/src
+      Description: 'This is an example.
+
+        Use it as a reference to create your own function.
+
+        '
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-ExampleFunction
   CrawlerMalpensante:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: lambdas/CrawlerMalpensante/
-      Description: |
-        "This script fetch the information of articles from Malpensante as rss feed"
-      FunctionName: !Sub "${AWS::StackName}-CrawlerMalpensante"
+      CodeUri: lambdas/CrawlerMalpensante/src
+      Description: '"This script fetch the information of articles from Malpensante
+        as rss feed"
+
+        '
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-CrawlerMalpensante
       Policies:
-        - AWSLambdaBasicExecutionRole
+      - AWSLambdaBasicExecutionRole
       Events:
         HeadEvent:
           Type: HttpApi
           Properties:
-            ApiId: !Ref ExampleSubdomainApiGateway
+            ApiId:
+              Ref: ExampleSubdomainApiGateway
             Method: HEAD
             Path: /rss/malpensante
         ExampleAPIEvent:
           Type: HttpApi
           Properties:
-            ApiId: !Ref ExampleSubdomainApiGateway
+            ApiId:
+              Ref: ExampleSubdomainApiGateway
             Method: GET
             Path: /rss/malpensante
-      Timeout: 300 # 300 seconds (5 minutes)
-
-
-  PacktCrawler:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: lambdas/PacktCrawler/
-      Description: |
-        "This script fetch the information of free books from Packt"
-      FunctionName: !Sub "${AWS::StackName}-PacktCrawler"
-      Handler: app.lambda_handler
-      Environment:
-        Variables:
-          TELEGRAM_BOT_TOKEN: !Ref SECRETTELEGRAMBOTTOKEN
-          CHAT_ID: !Ref SECRETCHATID
-      Events:
-        ScheduledEvent:
-          Type: Schedule
-          Properties:
-            Schedule: cron(0 11 * * ? *) # 11:00 AM UTC o 6:00 AM GMT-5
-            Enabled: true
-      Layers:
-        - !Ref LayerLibs
-      Policies:
-        - AWSLambdaBasicExecutionRole
-      MemorySize: 2560 # 2.5 GB
-      Timeout: 300 # 300 seconds (5 minutes)
-
+      Timeout: 300
 Outputs:
   HostedZoneNameServers:
-    Description: "Please copy the name servers below to your DNS provider"
-    Value: !Join [",", !GetAtt MyHostedDomain.NameServers]
+    Description: Please copy the name servers below to your DNS provider
+    Value:
+      Fn::Join:
+      - ','
+      - Fn::GetAtt: MyHostedDomain.NameServers
   HostedZoneArn:
-    Description: "Please use this Id to create records"
-    Value: !GetAtt MyHostedDomain.Id
+    Description: Please use this Id to create records
+    Value:
+      Fn::GetAtt: MyHostedDomain.Id
   StackInfo:
-    Value: !Sub "Stack name: ${AWS::StackName}, Id: ${AWS::StackId}"
-...
+    Value:
+      Fn::Sub: 'Stack name: ${AWS::StackName}, Id: ${AWS::StackId}'

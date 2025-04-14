@@ -1,0 +1,10 @@
+Resources:
+  # 🟠 Lambda Functions
+  ExampleFunction:  # 📝
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdas/ExampleFunction/src  # 📝
+      Description: | # 📝
+        This is an example.
+        Use it as a reference to create your own function.
+      FunctionName: !Sub "${AWS::StackName}-ExampleFunction"  # 📝
