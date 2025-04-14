@@ -1,0 +1,18 @@
+Resources:
+  ExampleApi:  # 📝
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdas/ExampleFunction/src  # 📝
+      Description: | # 📝
+        This is an example.
+        Use it as a reference to create your own endpoint.
+      FunctionName: !Sub "${AWS::StackName}-ExampleApi"  # 📝
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      Events:
+        ExampleAPIEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ExampleSubdomainApiGateway
+            Method: GET
+            Path: /example  # 📝

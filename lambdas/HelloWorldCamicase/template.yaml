@@ -1,0 +1,9 @@
+Resources:
+  HelloWorldCamicase:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdas/HelloWorldCamicase/src
+      Description: "Hello world of Camicase" # 📝
+      FunctionName: !Sub "${AWS::StackName}-HelloWorldCamicase"  # 📝
+      Policies:
+        - AWSLambdaBasicExecutionRole

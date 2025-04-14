@@ -1,0 +1,17 @@
+Resources:
+  ExampleCronjob:  # 📝
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdas/ExampleFunction/src  # 📝
+      Description: | # 📝
+        "This is an example.
+        Use it as a reference to create your own cronjob."
+      FunctionName: !Sub "${AWS::StackName}-ExampleCronjob"  # 📝
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      Events:
+        ScheduledEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 0 1 1 ? *)  # Ene 1 a las 12:00 AM UTC
+            Enabled: false
