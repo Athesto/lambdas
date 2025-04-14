@@ -1,4 +1,4 @@
-.PHONY: generate
+.PHONY: setup-generate-template generate-template validate-template
 .SILENT:
 
 setup-generate-template:
