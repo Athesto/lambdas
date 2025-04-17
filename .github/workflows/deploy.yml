@@ -29,9 +29,14 @@ jobs:
         role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubActionsSAMRole  # Reemplaza con tu ARN de IAM
         aws-region: us-east-1  # Reemplaza con tu región
 
+    - name: Install dependences
+      run: |
+        apt-get update \
+        && apt-get install -y make python3 python3-venv
+
     - name: 🔍 Validate template.yaml
       run: |
-        make setup-template
+        make setup-generate-template
         make validate-template
 
     - name: 🔍 Validate Syntax
