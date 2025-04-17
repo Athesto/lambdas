@@ -13,8 +13,10 @@ def main():
     # Asegurar que haya una sección Resources
     template.setdefault("Resources", {})
 
+    files = sorted((path for path in Path("lambdas").rglob("template.yaml")))
+
     # Buscar todos los templates locales en cada lambda
-    for path in Path("lambdas").rglob("template.yaml"):
+    for path in files:
         with open(path) as f:
             fragment = yaml.safe_load(f)
             resources = fragment.get("Resources", {})
