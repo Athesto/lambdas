@@ -5,7 +5,7 @@ setup-generate-template:
 	python3 -m venv venv
 	. venv/bin/activate && { \
 		pip3 install -r scripts/generate-template/requirements.txt; \
-		pip3 list;
+		pip3 list; \
 	}
 
 generate-template:
