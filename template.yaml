@@ -55,57 +55,33 @@ Resources:
         Fn::Sub: ${AWS::StackName}-Libs
     Metadata:
       BuildMethod: python3.11
-  HelloWorldCamicase:
+  CrawlerMalpensante:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: lambdas/HelloWorldCamicase/src
-      Description: Hello world of Camicase
-      FunctionName:
-        Fn::Sub: ${AWS::StackName}-HelloWorldCamicase
-      Policies:
-      - AWSLambdaBasicExecutionRole
-  ExampleLayer:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: lambdas/ExampleLayer/src
-      Description: '"This is an example.
-
-        Use it as a reference to create your own function with layers."
+      CodeUri: lambdas/CrawlerMalpensante/src
+      Description: '"This script fetch the information of articles from Malpensante
+        as rss feed"
 
         '
       FunctionName:
-        Fn::Sub: ${AWS::StackName}-ExampleLayer
-      Layers:
-      - Ref: LayerLibs
+        Fn::Sub: ${AWS::StackName}-CrawlerMalpensante
       Policies:
       - AWSLambdaBasicExecutionRole
-  PacktCrawler:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: lambdas/PacktCrawler/src
-      Description: '"This script fetch the information of free books from Packt"
-
-        '
-      FunctionName:
-        Fn::Sub: ${AWS::StackName}-PacktCrawler
-      Handler: app.lambda_handler
-      Environment:
-        Variables:
-          TELEGRAM_BOT_TOKEN:
-            Ref: SECRETTELEGRAMBOTTOKEN
-          CHAT_ID:
-            Ref: SECRETCHATID
       Events:
-        ScheduledEvent:
-          Type: Schedule
+        HeadEvent:
+          Type: HttpApi
           Properties:
-            Schedule: cron(0 11 * * ? *)
-            Enabled: true
-      Layers:
-      - Ref: LayerLibs
-      Policies:
-      - AWSLambdaBasicExecutionRole
-      MemorySize: 2560
+            ApiId:
+              Ref: ExampleSubdomainApiGateway
+            Method: HEAD
+            Path: /rss/malpensante
+        ExampleAPIEvent:
+          Type: HttpApi
+          Properties:
+            ApiId:
+              Ref: ExampleSubdomainApiGateway
+            Method: GET
+            Path: /rss/malpensante
       Timeout: 300
   ExampleApi:
     Type: AWS::Serverless::Function
@@ -128,26 +104,6 @@ Resources:
               Ref: ExampleSubdomainApiGateway
             Method: GET
             Path: /example
-  RssAgendaCulturalBogota:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: lambdas/RssAgendaCulturalBogota/src
-      Description: '"This script fetch the information of bogota agenda as rss feed"
-
-        '
-      FunctionName:
-        Fn::Sub: ${AWS::StackName}-RssAgendaCulturalBogota
-      Policies:
-      - AWSLambdaBasicExecutionRole
-      Events:
-        ExampleAPIEvent:
-          Type: HttpApi
-          Properties:
-            ApiId:
-              Ref: ExampleSubdomainApiGateway
-            Method: GET
-            Path: /rss/agenda-cultural-bogota
-      Timeout: 30
   ExampleCronjob:
     Type: AWS::Serverless::Function
     Properties:
@@ -178,34 +134,78 @@ Resources:
         '
       FunctionName:
         Fn::Sub: ${AWS::StackName}-ExampleFunction
-  CrawlerMalpensante:
+  ExampleLayer:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: lambdas/CrawlerMalpensante/src
-      Description: '"This script fetch the information of articles from Malpensante
-        as rss feed"
+      CodeUri: lambdas/ExampleLayer/src
+      Description: '"This is an example.
+
+        Use it as a reference to create your own function with layers."
 
         '
       FunctionName:
-        Fn::Sub: ${AWS::StackName}-CrawlerMalpensante
+        Fn::Sub: ${AWS::StackName}-ExampleLayer
+      Layers:
+      - Ref: LayerLibs
+      Policies:
+      - AWSLambdaBasicExecutionRole
+  HelloWorldCamicase:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdas/HelloWorldCamicase/src
+      Description: Hello world of Camicase
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-HelloWorldCamicase
+      Policies:
+      - AWSLambdaBasicExecutionRole
+  PacktCrawler:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdas/PacktCrawler/src
+      Description: '"This script fetch the information of free books from Packt"
+
+        '
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-PacktCrawler
+      Handler: app.lambda_handler
+      Environment:
+        Variables:
+          TELEGRAM_BOT_TOKEN:
+            Ref: SECRETTELEGRAMBOTTOKEN
+          CHAT_ID:
+            Ref: SECRETCHATID
+      Events:
+        ScheduledEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 11 * * ? *)
+            Enabled: true
+      Layers:
+      - Ref: LayerLibs
+      Policies:
+      - AWSLambdaBasicExecutionRole
+      MemorySize: 2560
+      Timeout: 300
+  RssAgendaCulturalBogota:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdas/RssAgendaCulturalBogota/src
+      Description: '"This script fetch the information of bogota agenda as rss feed"
+
+        '
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-RssAgendaCulturalBogota
       Policies:
       - AWSLambdaBasicExecutionRole
       Events:
-        HeadEvent:
-          Type: HttpApi
-          Properties:
-            ApiId:
-              Ref: ExampleSubdomainApiGateway
-            Method: HEAD
-            Path: /rss/malpensante
         ExampleAPIEvent:
           Type: HttpApi
           Properties:
             ApiId:
               Ref: ExampleSubdomainApiGateway
             Method: GET
-            Path: /rss/malpensante
-      Timeout: 300
+            Path: /rss/agenda-cultural-bogota
+      Timeout: 30
 Outputs:
   HostedZoneNameServers:
     Description: Please copy the name servers below to your DNS provider
