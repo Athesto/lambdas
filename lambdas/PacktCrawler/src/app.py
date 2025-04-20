@@ -39,11 +39,15 @@ class HTMLExtractor():
     def extract(data):
         tree = html.fromstring(data)
 
-        author_raw = tree.xpath(
+        author_node = tree.xpath(
             ".//span[contains(@class, 'product-info__author')]"
             "/text()"
-        )[0].replace("By", "")
-        author = re.sub(r"\s+", " ", author_raw).strip()
+        )
+        if author_node:
+            author_raw = author_node[0].replace("By", "")
+            author = re.sub(r"\s+", " ", author_raw).strip()
+        else:
+            author = "Uknown"
 
         description_node = tree.xpath(
             ".//div[contains(@class, 'free_learning__product_description')]"
@@ -97,17 +101,6 @@ def requests_page(url):
     response = requests.get(url)
     response.raise_for_status()
     return response
-
-
-def export_file(data, path):
-    with open(path, 'wb') as f:
-        f.write(data)
-
-
-def read_file(path):
-    with open(path, 'r') as f:
-        return f.read()
-
 
 
 
